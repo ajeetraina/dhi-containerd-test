@@ -1,0 +1,53 @@
+name: Test containerd image store on GitHub Actions
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker with containerd image store
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: Verify containerd image store is active
+        run: |
+          docker info | grep -i "Storage Driver"
+
+      - name: Log in to DHI registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build with provenance and SBOM (no --push)
+        run: |
+          docker build \
+            --provenance=mode=mode=max \
+            --sbom=true \
+            -t mytest/python-dhi:test .
+
+      - name: Scan with Docker Scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: mytest/python-dhi:test
+          only-severities: critical,high
+          exit-code: false
+
+      - name: Check VEX statements were applied
+        run: |
+          docker scout cves mytest/python-dhi:test 2>&1 | grep -i "VEX statements"
+
+      - name: Push only if scan passes
+        run: |
+          docker push mytest/python-dhi:test
