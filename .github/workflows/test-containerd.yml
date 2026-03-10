@@ -33,7 +33,7 @@ jobs:
           docker build \
             --provenance=mode=max \
             --sbom=true \
-            -t mytest/python-dhi:test .
+            -t ajeetraina777/python-dhi:test .
 
       - name: Install Docker Scout CLI
         run: |
