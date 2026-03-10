@@ -81,7 +81,7 @@ jobs:
 
       - name: Scan with Docker Scout
         run: |
-          docker scout cves mytest/python-dhi:test 2>&1 | tee scout-with-containerd.txt
+          docker scout cves ajeetraina777/python-dhi:test 2>&1 | tee scout-with-containerd.txt
           echo "--- Scout output ---"
           cat scout-with-containerd.txt
           echo "--- Checking for attestations ---"
