@@ -88,4 +88,4 @@ jobs:
           grep -i "attestation\|VEX\|provenance\|SBOM" scout-with-containerd.txt || echo "No attestation lines found"
 
       - name: Push only if scan passes
-        run: docker push mytest/python-dhi:test
+        run: docker push ajeetraina777/python-dhi:test
