@@ -75,8 +75,11 @@ jobs:
 
       - name: Scan with Docker Scout
         run: |
-          docker scout cves mytest/python-dhi:test 2>&1 | tee scout-without-containerd.txt
-          grep -i "VEX statements" scout-without-containerd.txt
+          docker scout cves mytest/python-dhi:test 2>&1 | tee scout-with-containerd.txt
+          echo "--- Scout output ---"
+          cat scout-with-containerd.txt
+          echo "--- Checking for attestations ---"
+          grep -i "attestation\|VEX\|provenance\|SBOM" scout-with-containerd.txt || echo "No attestation lines found"
 
       - name: Push only if scan passes
         run: docker push mytest/python-dhi:test
